@@ -1,21 +1,25 @@
-package dasniko.keycloak.authenticator;
+package com.stratumn.keycloak.authenticator;
+
+import java.util.List;
 
 import org.keycloak.Config;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.AuthenticatorFactory;
+import org.keycloak.common.util.SecretGenerator;
 import org.keycloak.models.AuthenticationExecutionModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
-import java.util.List;
-
 /**
- * @author Niko Köbler, https://www.n-k.de, @dasniko
+ * @author Niko Köbler, https://www.n-k.de, @niroj
+ * @author Stratumn, https://www.stratumn.com
  */
-public class SmsAuthenticatorFactory implements AuthenticatorFactory {
-
-	public static final String PROVIDER_ID = "sms-authenticator";
+public class EmailAuthenticatorFactory implements AuthenticatorFactory {
+	public static final String PROVIDER_ID = "email-authenticator";
+	public static final String DISPLAY_TYPE = "EMAIL Authentication";
+	public static final String HELP_TEXT = "Validates an OTP sent via email to the users.";
+	public static final String REFERENCE_CATEGORY = "otp";
 
 	@Override
 	public String getId() {
@@ -24,17 +28,17 @@ public class SmsAuthenticatorFactory implements AuthenticatorFactory {
 
 	@Override
 	public String getDisplayType() {
-		return "SMS Authentication";
+		return DISPLAY_TYPE;
 	}
 
 	@Override
 	public String getHelpText() {
-		return "Validates an OTP sent via SMS to the users mobile phone.";
+		return HELP_TEXT;
 	}
 
 	@Override
 	public String getReferenceCategory() {
-		return "otp";
+		return REFERENCE_CATEGORY;
 	}
 
 	@Override
@@ -44,7 +48,7 @@ public class SmsAuthenticatorFactory implements AuthenticatorFactory {
 
 	@Override
 	public boolean isUserSetupAllowed() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -55,16 +59,16 @@ public class SmsAuthenticatorFactory implements AuthenticatorFactory {
 	@Override
 	public List<ProviderConfigProperty> getConfigProperties() {
 		return List.of(
-			new ProviderConfigProperty("length", "Code length", "The number of digits of the generated code.", ProviderConfigProperty.STRING_TYPE, 6),
-			new ProviderConfigProperty("ttl", "Time-to-live", "The time to live in seconds for the code to be valid.", ProviderConfigProperty.STRING_TYPE, "300"),
-			new ProviderConfigProperty("senderId", "SenderId", "The sender ID is displayed as the message sender on the receiving device.", ProviderConfigProperty.STRING_TYPE, "Keycloak"),
-			new ProviderConfigProperty("simulation", "Simulation mode", "In simulation mode, the SMS won't be sent, but printed to the server logs", ProviderConfigProperty.BOOLEAN_TYPE, true)
-		);
+				new ProviderConfigProperty("length", "Code length", "The number of digits of the generated code.",
+						ProviderConfigProperty.STRING_TYPE, "6"),
+				new ProviderConfigProperty("ttl", "Time-to-live",
+						"The time to live in seconds for the code to be valid.", ProviderConfigProperty.STRING_TYPE,
+						"300"));
 	}
 
 	@Override
 	public Authenticator create(KeycloakSession session) {
-		return new SmsAuthenticator();
+		return new EmailAuthenticator(new EmailSender(session), SecretGenerator.getInstance());
 	}
 
 	@Override
@@ -78,5 +82,4 @@ public class SmsAuthenticatorFactory implements AuthenticatorFactory {
 	@Override
 	public void close() {
 	}
-
 }
