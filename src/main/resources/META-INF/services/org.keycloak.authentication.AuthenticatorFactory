@@ -1,1 +1,1 @@
-dasniko.keycloak.authenticator.SmsAuthenticatorFactory
+com.stratumn.keycloak.authenticator.EmailAuthenticatorFactory

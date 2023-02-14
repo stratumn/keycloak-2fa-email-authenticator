@@ -1,17 +1,25 @@
-# Keycloak 2FA SMS Authenticator
+# Keycloak OTP email provider
 
-Keycloak Authentication Provider implementation to get a 2nd-factor authentication with a OTP/code/token send via SMS (through AWS SNS).
+This Keycloak otp email provider provides an authenticator that sends an email containing a password valid for a certain amount of time.
 
-_Demo purposes only!_
+Forked from https://github.com/dasniko/keycloak-2fa-sms-authenticator
 
-Unfortunately, I don't have a real readme yet.
-Blame on me!
+## Installation
 
-But, for now, you can at least read my **blog post** about this autenticator here:  
-https://www.n-k.de/2020/12/keycloak-2fa-sms-authentication.html
+Make sure you have java 11 installed in your machint. To install this provider in your keycloak, you need first to build the jar file running the following command:
 
-Or, just watch my **video** about this 2FA SMS SPI:
+```
+mvn install
+```
 
-[![](http://img.youtube.com/vi/GQi19817fFk/maxresdefault.jpg)](http://www.youtube.com/watch?v=GQi19817fFk "")
+You'll find the jar file uner the `target` directory. Then you need to place this jar file under the `providers` folder of you keycloak. Finally you can start you keycloak server that will automatically detect this new provider at build time and add it to you keycloak.
 
-[![](http://img.youtube.com/vi/FHJ5WOx1es0/maxresdefault.jpg)](http://www.youtube.com/watch?v=FHJ5WOx1es0 "")
+## Configuration
+
+Once the installation is done and the server started, you'll find this new authenticator that you can add to your authentication flow. The display name of this provider is `EMAIL Authentication`.
+
+Some configuration is required in order for this provider to work. These variables must be set:
+
+- alias (required): that is a name you give to your provider
+- ttl (default 300): time to live in seconds for the otp code
+- length (default 6): number of digits of the otp code
